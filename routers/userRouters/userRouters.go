@@ -11,6 +11,7 @@ func UserRoutersInit(r *gin.Engine) {
 	defaultRoutes := r.Group("/user")
 	{
 		defaultRoutes.POST("/login", userController.Login)
+		defaultRoutes.POST("/register", userController.Register)
 	}
 
 	// 扩展接口1 的点赞操作和点赞列表
