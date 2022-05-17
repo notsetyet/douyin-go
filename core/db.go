@@ -8,7 +8,7 @@ import (
 )
 
 //DSN
-const DSN = "wuliang:bytedance@tcp(1.117.27.35:3306)/douyin?charset=utf8mb4&parseTime=True&loc=Local"
+const DSN = "xiaoao:bytedance@tcp(1.117.27.35:3306)/douyin?charset=utf8mb4&parseTime=True&loc=Local"
 
 var DB *gorm.DB
 var err error
