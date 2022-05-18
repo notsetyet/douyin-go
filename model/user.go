@@ -5,6 +5,7 @@ import (
 )
 
 //用户表
+
 type User struct {
 	gorm.Model
 	Username      string `json:"username"`       //用户名

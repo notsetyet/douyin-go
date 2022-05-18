@@ -1,7 +1,7 @@
 package main
 
 import (
-	"douyin/routers/userRouters"
+	"douyin/routers/commentRouters"
 	_ "fmt"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
@@ -16,5 +16,6 @@ func main() {
 }
 
 func initRouters(r *gin.Engine) {
-	userRouters.UserRoutersInit(r)
+	//userRouters.UserRoutersInit(r)
+	commentRouters.CommentRouterInit(r)
 }

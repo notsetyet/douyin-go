@@ -3,6 +3,7 @@ package model
 import "gorm.io/gorm"
 
 //视频
+
 type Video struct {
 	gorm.Model
 	UserId        uint   `json:"user_id"`        //视频对应的用户
