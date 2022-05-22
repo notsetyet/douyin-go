@@ -14,7 +14,7 @@ var DB *gorm.DB
 var err error
 
 //初始化数据库
-func init() {
+func Init() {
 	DB, err = gorm.Open(mysql.Open(DSN), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 	})
