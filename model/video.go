@@ -1,7 +1,6 @@
 package model
 
 import (
-	"errors"
 	"gorm.io/gorm"
 )
 
@@ -18,16 +17,12 @@ type Video struct {
 // LikeVideo 对视频进行点赞或取消点赞
 func (v Video) LikeVideo(db *gorm.DB, actionType uint32) error {
 	var err = db.Error
-	// 对操作类型进行判断，只支持 1/2
+	// 注意这里不能使用 db.Model() 的方式，这样会导致即使没有记录也不会返回错误
 	if actionType == 1 {
-		// 注意这里不能使用 db.Model() 的方式，这样会导致即使没有记录也不会返回错误
 		err = db.Where("id = ?", v.ID).First(&v).Update("favorite_count", gorm.Expr("favorite_count + ?", 1)).Error
-	} else if actionType == 2 {
-		err = db.Where("id = ?", v.ID).First(&v).Update("favorite_count", gorm.Expr("favorite_count - ?", 1)).Error
 	} else {
-		err = errors.New("bad actionType")
+		err = db.Where("id = ?", v.ID).First(&v).Update("favorite_count", gorm.Expr("favorite_count - ?", 1)).Error
 	}
-
 	if err != nil {
 		return err
 	}
