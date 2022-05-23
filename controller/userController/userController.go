@@ -3,6 +3,7 @@ package userController
 import (
 	_ "douyin/core"
 	"douyin/model"
+	"douyin/service/jwt"
 	"douyin/service/userService"
 	"douyin/vo/common"
 	"douyin/vo/userVo"
@@ -30,11 +31,11 @@ func Login(c *gin.Context) {
 	////
 	////
 	////
-	token := "token"
+	// 根据 user.ID 生成 token
+	token, _ := jwt.SetToken(c, user.ID)
 	c.JSON(http.StatusOK, userVo.UserLoginResponse{
 		Response: common.Response{StatusCode: 0, StatusMsg: "登陆成功"},
 		UserId:   user.ID,
 		Token:    token,
 	})
-
 }

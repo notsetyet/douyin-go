@@ -4,18 +4,13 @@ import (
 	"gorm.io/gorm"
 )
 
-// 用户video点赞中间表    user对video的点赞
-// IsDel:	0-未删除，1-删除
+// FavoriteUserVideo
+// 用户、video 中间表
+// DeletedAt:	0-未删除，1-删除，声明为 gorm.DeletedAt 可以配合 gorm 的软删除
 type FavoriteUserVideo struct {
 	UserId    uint           `json:"user_id"`
 	VideoId   uint           `json:"video_id"`
 	DeletedAt gorm.DeletedAt `json:"deleted_at"`
-}
-
-// FavoriteResult 联表查询的结果
-type FavoriteResult struct {
-	UserId uint     `json:"user_id"`
-	Videos []*Video `json:"videos"`
 }
 
 // Create 当记录不存在时，创建记录
@@ -31,16 +26,18 @@ func (fuv FavoriteUserVideo) Create(db *gorm.DB) error {
 	return err
 }
 
+// Delete 软删除记录
 func (fuv FavoriteUserVideo) Delete(db *gorm.DB) error {
 	// gorm.DeletedAt 具有软删除
 	// 直接用 db.Delete(&fuv) 会报错 "Where condition required"
 	return db.Where("user_id = ? AND video_id = ?", fuv.UserId, fuv.VideoId).Delete(&FavoriteUserVideo{}).Error
 }
 
-// List 联表查询
+// List 联表查询 fuv 和 video 表
 func (fuv FavoriteUserVideo) List(db *gorm.DB) ([]*Video, error) {
 	var videos []*Video
 	var err error
+	// Where 的条件是针对 fuv 表的，即 fuv 表中 user_id = fuv.UserId，后面必须加 Find，否则会返回软删除的数据
 	err = db.Table("favorite_user_videos").
 		Select("videos.*").
 		Joins("left join videos on videos.id = favorite_user_videos.video_id").

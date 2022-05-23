@@ -4,6 +4,7 @@ import (
 	"douyin/dao/favUserVideoDao"
 	"douyin/dao/favoriteDao"
 	"douyin/model"
+	"douyin/service/jwt"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"net/http"
@@ -14,16 +15,6 @@ import (
 type favoriteListResponse struct {
 	model.Response
 	VideoList []*model.Video `json:"video_list"`
-}
-
-var demoVideo = []model.Video{
-	{
-		UserId:        0,
-		PlayUrl:       "https://www.bilibili.com/bangumi/play/ep321810?t=1",
-		CoverUrl:      "https://i0.hdslb.com/bfs/archive/82d4523e2562748d050a8d8ec7ebc03fbe1a15a1.jpg",
-		FavoriteCount: 999,
-		CommentCount:  29,
-	},
 }
 
 // FavoriteAction 点赞操作的 handler 函数
@@ -39,7 +30,15 @@ func FavoriteAction(c *gin.Context) {
 		})
 		return
 	}
-	// TODO:token鉴权
+
+	_, err = jwt.GetToken(c, 1)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, model.Response{
+			StatusCode: -1,
+			StatusMsg:  err.Error(),
+		})
+		return
+	}
 
 	// 1. 更新视频的点赞数
 	video := model.Video{
@@ -67,10 +66,18 @@ func FavoriteAction(c *gin.Context) {
 	c.JSON(http.StatusOK, model.Response{StatusCode: 0})
 }
 
-// TODO: 完善调用链
 // FavoriteList 点赞列表的 handler 函数
 func FavoriteList(c *gin.Context) {
 	userID, err := strconv.ParseInt(c.Query("user_id"), 10, 64)
+
+	_, err = jwt.GetToken(c, 0)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, model.Response{
+			StatusCode: -1,
+			StatusMsg:  err.Error(),
+		})
+		return
+	}
 
 	var fuv = model.FavoriteUserVideo{UserId: uint(userID)}
 	favList, err := favUserVideoDao.ListFavorite(&fuv)
@@ -81,17 +88,11 @@ func FavoriteList(c *gin.Context) {
 		})
 		return
 	}
+	// TODO: 接口的 response.video 中还有 auth 结构体
 	c.JSON(http.StatusOK, favoriteListResponse{
 		Response: model.Response{
 			StatusCode: 0,
 		},
 		VideoList: favList,
 	})
-
-	//c.JSON(http.StatusOK, favoriteListResponse{
-	//	Response: model.Response{
-	//		StatusCode: 0,
-	//	},
-	//	VideoList: demoVideo,
-	//})
 }
