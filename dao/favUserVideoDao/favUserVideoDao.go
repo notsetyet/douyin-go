@@ -22,3 +22,12 @@ func ListFavorite(fuv *model.FavoriteUserVideo) ([]*model.Video, error) {
 	}
 	return videos, nil
 }
+
+// ListVideo 根据用户ID查找其所有点赞视频的信息 --> videoList 结构体包含视频和视频作者(auth)的信息
+func ListVideo(fuv *model.FavoriteUserVideo) ([]*model.VideoList, error) {
+	videoList, err := fuv.ListVideo(core.DB)
+	if err != nil {
+		return nil, err
+	}
+	return videoList, nil
+}

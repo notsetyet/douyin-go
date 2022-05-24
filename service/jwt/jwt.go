@@ -39,7 +39,7 @@ func SetToken(ctx *gin.Context, userID uint) (string, error) {
 }
 
 // GetToken 解析 token
-func GetToken(ctx *gin.Context, method uint8) (int, error) {
+func GetToken(ctx *gin.Context, method uint8) (int64, error) {
 	var tokenString string
 	// 根据 method 方法判断是 GET 请求还是 POST 请求：0 -- GET		1 -- POST
 	if method == 0 {
@@ -55,7 +55,7 @@ func GetToken(ctx *gin.Context, method uint8) (int, error) {
 	if err != nil || !token.Valid {
 		return -1, errors.New("权限不足")
 	}
-	return int(claims.UserId), nil
+	return int64(claims.UserId), nil
 }
 
 func ParseToken(tokenString string) (*jwt.Token, *Claims, error) {

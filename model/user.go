@@ -12,3 +12,12 @@ type User struct {
 	FollowCount   int64  `json:"follow_count"`   //关注数
 	FollowerCount int64  `json:"follower_count"` //粉丝数
 }
+
+func (u User) List(db *gorm.DB) (*User, error) {
+	var user User
+	err := db.Where("id = ?", u.ID).Find(&user).Error
+	if err != nil {
+		return &user, err
+	}
+	return &user, nil
+}
