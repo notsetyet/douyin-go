@@ -3,6 +3,7 @@ package commentDao
 import (
 	"douyin/core"
 	"douyin/model"
+	"gorm.io/gorm"
 )
 
 /*
@@ -30,8 +31,8 @@ func SelectByVideoIdDescByCreateTime(vid uint) (err error, comments []model.Comm
 添加一个评论
 */
 
-func AddComment(comment *model.Comment) (err error) {
-	err = core.DB.Create(comment).Error
+func AddComment(comment *model.Comment, tx *gorm.DB) (err error) {
+	err = tx.Create(comment).Error
 	return err
 }
 
@@ -39,8 +40,8 @@ func AddComment(comment *model.Comment) (err error) {
 删除评论
 */
 
-func DelCommentById(id uint) (err error) { //软删除
-	err = core.DB.Where("id=?", id).Delete(&model.Comment{}).Error
+func DelCommentById(id uint, tx *gorm.DB) (err error) { //软删除
+	err = tx.Where("id=?", id).Delete(&model.Comment{}).Error
 	return err
 }
 

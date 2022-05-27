@@ -23,7 +23,7 @@ func CommentAction(c *gin.Context) {
 			comment := model.Comment{
 				UserId:  uint(userid),
 				VideoId: uint(videoid),
-				//Content: c.Query("comment_text"),这样无法插入编码为Latin1编码的数据库
+				//Content: c.Query("comment_text"),这样无法插入编码为Latin1编码的数据库e
 			}
 			content, err4 := commentService.Convert1(c.Query("comment_text"))
 			if err4 == nil {

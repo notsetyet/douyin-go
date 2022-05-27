@@ -9,9 +9,9 @@ import (
 
 //DSN
 
-const DSN = "xiaoao:bytedance@tcp(1.117.27.35:3306)/douyin?charset=utf8mb4&parseTime=True&loc=Local"
+//const DSN = "xiaoao:bytedance@tcp(1.117.27.35:3306)/douyin?charset=utf8mb4&parseTime=True&loc=Local"
 
-//const DSN = "root:Cheng0712..@tcp(localhost:3306)/douyin?charset=utf8mb4&parseTime=True&loc=Local" //本地测试
+const DSN = "root:Cheng0712..@tcp(localhost:3306)/douyin?charset=utf8mb4&parseTime=True&loc=Local" //本地测试
 
 var DB *gorm.DB
 var err error

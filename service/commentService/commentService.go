@@ -1,6 +1,7 @@
 package commentService
 
 import (
+	"douyin/core"
 	"douyin/dao/commentDao"
 	"douyin/model"
 	"douyin/vo/commentVo"
@@ -65,13 +66,16 @@ func SelectCommentList(vid uint, uid uint) (clr commentVo.CommentListResponse) {
 //添加评论
 
 func AddComment(comment *model.Comment) (resp common.Response) {
-	//TODO 下面这两个操作应该是一个原子操作，需要手动开启关闭事务
-	err1 := commentDao.AddComment(comment)
-	err2, _ := commentDao.UpdateCommentCount(1, comment.VideoId)
+	//下面这两个操作是一个原子操作，需要手动开启关闭事务
+	tx := core.DB.Begin()
+	err1 := commentDao.AddComment(comment, tx)
+	err2, _ := commentDao.UpdateCommentCount(1, comment.VideoId, tx)
 	if err1 == nil && err2 == nil {
+		tx.Commit() //提交事务
 		resp.StatusCode = 0
 		resp.StatusMsg = "success"
 	} else {
+		tx.Rollback()     //回滚事务
 		fmt.Println(err1) //TODO 先打印到控制台，后续可改为记到日志中
 		fmt.Println(err2)
 		resp.StatusCode = 1
@@ -83,14 +87,17 @@ func AddComment(comment *model.Comment) (resp common.Response) {
 //删除评论
 
 func DelComment(id uint) (resp common.Response) {
-	//TODO 下面这三个个操作应该是一个原子操作，需要手动开启关闭事务
-	err, comment := commentDao.SelectCommentById(id)
-	err1 := commentDao.DelCommentById(id)
-	err2, _ := commentDao.UpdateCommentCount(-1, comment.VideoId)
+	//下面这三个个操作是一个原子操作，需要手动开启关闭事务
+	tx := core.DB.Begin()
+	err, comment := commentDao.SelectCommentById(id) //这个是查询操作，没有使用tx
+	err1 := commentDao.DelCommentById(id, tx)
+	err2, _ := commentDao.UpdateCommentCount(-1, comment.VideoId, tx)
 	if err == nil && err1 == nil && err2 == nil {
+		tx.Commit() //提交事务
 		resp.StatusCode = 0
 		resp.StatusMsg = "success"
 	} else {
+		tx.Rollback()     //回滚事务
 		fmt.Println(err1) //TODO 先打印到控制台，后续可改为记到日志中
 		fmt.Println(err2)
 		resp.StatusCode = 1
